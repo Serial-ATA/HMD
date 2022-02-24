@@ -53,5 +53,6 @@ pub const U16_SMALL_V: u16 = 118;
 pub const U16_SMALL_W: u16 = 119;
 pub const U16_SMALL_X: u16 = 120;
 pub const U16_SMALL_Y: u16 = 121;
+pub const U16_SMALL_Z: u16 = 122;
 pub const U16_VERTICAL_BAR: u16 = 124;
 pub const U16_TILDE: u16 = 126;

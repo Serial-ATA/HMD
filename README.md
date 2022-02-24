@@ -237,3 +237,7 @@ You can insert icons with `[[icon]]` tag, but it's not implemented yet.
 - [ ] Better name instead of *extra tag*
 - [ ] Tests
   - [ ] More tests
+- [ ] Themes
+  - Impossible!
+  - I cannot control `syntect`'s color palette.
+  - SVG's colors are not affected by CSS files.

@@ -1,6 +1,7 @@
 use crate::consts::*;
 use crate::markdown::line::{Line, LineType};
 use crate::utils::{get_bracket_end_index, lowercase};
+use std::str::FromStr;
 
 
 pub fn render_independent_tag(lines: &Vec<Line>) -> Vec<Line> {
@@ -118,6 +119,15 @@ fn parse_tag(content: &Vec<u16>, index: usize) -> Result<Vec<u16>, ()> {
         return Ok(vec![U16_AMPERSAND, U16_SMALL_N, U16_SMALL_B, U16_SMALL_S, U16_SMALL_P, U16_SEMI_COLON]);
     }
 
+    if is_icon(&content) {
+
+        match parse_icon(&content) {
+            Some(s) => {return Ok(s);}
+            _ => {}
+        }
+
+    }
+
     if content[0] == U16_SLASH {
 
         if is_color_name(&content[1..]) || is_size_name(&content[1..]) {
@@ -133,6 +143,9 @@ fn parse_tag(content: &Vec<u16>, index: usize) -> Result<Vec<u16>, ()> {
     Err(())
 }
 
+// TODO: make a `color` module
+// define all colors there
+// `color_names.contains(string)` would be much better!
 fn is_color_name(string: &[u16]) -> bool {
     string == &vec![U16_SMALL_A, U16_SMALL_Q, U16_SMALL_U, U16_SMALL_A] ||
     string == &vec![U16_SMALL_B, U16_SMALL_L, U16_SMALL_U, U16_SMALL_E] ||
@@ -163,4 +176,90 @@ fn is_box_name(string: &[u16]) -> bool {
 
 fn is_blank_name(string: &[u16]) -> bool {
     string.len() == 5 && string[0] == U16_SMALL_B && string[1] == U16_SMALL_L && string[2] == U16_SMALL_A && string[3] == U16_SMALL_N && string[4] == U16_SMALL_K
+}
+
+// if true, it's possibly a valid icon
+// if not, it can never be an icon
+fn is_icon(string: &[u16]) -> bool {
+    string.len() > 5 && string[0] == U16_SMALL_I && string[1] == U16_SMALL_C && string[2] == U16_SMALL_O && string[3] == U16_SMALL_N && string[4] == U16_EQUAL
+}
+
+// `[[a = b, c = d, e = f]]` -> vec![(`a`, `b`), (`c`, `d`), (`e`, `f`)]
+fn parse_arguments(content: &[u16]) -> Vec<(Vec<u16>, Vec<u16>)> {  // Vec<(key, value)>
+    content.split(
+        |c|
+        *c == U16_COMMA
+    ).filter_map(
+        |arg| {
+            let arg_split = arg.split(
+                |c|
+                *c == U16_EQUAL
+            ).map(
+                |word|
+                word.to_vec()
+            ).collect::<Vec<Vec<u16>>>();
+
+            if arg_split.len() == 2 {
+                Some((arg_split[0].clone(), arg_split[1].clone()))
+            } else {
+                None
+            }
+        }
+    ).collect()
+}
+
+fn parse_icon(content: &[u16]) -> Option<Vec<u16>> {
+
+    let mut curr_icon = None;
+    let mut curr_size = None;
+    let mut curr_color = None;
+    let args = parse_arguments(content);
+
+    // if the same arg is given twice, the later one is applied
+    // I'm not raising an error for that
+    for (key, value) in args.iter() {
+
+        if key == &vec![U16_SMALL_I, U16_SMALL_C, U16_SMALL_O, U16_SMALL_N] {
+            curr_icon = Some(value.clone());
+        }
+
+        else if key == &vec![U16_SMALL_S, U16_SMALL_I, U16_SMALL_Z, U16_SMALL_E] {
+            curr_size = Some(value.clone());
+        }
+
+        else if key == &vec![U16_SMALL_C, U16_SMALL_O, U16_SMALL_L, U16_SMALL_O, U16_SMALL_R] {
+            curr_color = Some(value.clone());
+        }
+
+        else {
+            return None;
+        }
+
+    }
+
+    let curr_icon = if curr_icon.is_none() {
+        return None
+    } else {
+        curr_icon.unwrap()
+    };
+
+    let curr_size = if curr_size.is_none() {
+        24
+    } else {
+        match i32::from_str(&String::from_utf16_lossy(&curr_size.unwrap())) {
+            Err(_) => {return None}
+            Ok(n) => n
+        }
+    };
+
+    let curr_color = match curr_color {
+        None => vec![U16_SMALL_W, U16_SMALL_H, U16_SMALL_I, U16_SMALL_T, U16_SMALL_E],
+        Some(s) => if is_color_name(&s) {
+            s.clone()
+        } else {
+            return None
+        }
+    };
+
+    panic!("Not Implemented Yet!")
 }
