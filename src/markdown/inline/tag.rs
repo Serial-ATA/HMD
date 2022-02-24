@@ -162,5 +162,5 @@ fn is_box_name(string: &[u16]) -> bool {
 }
 
 fn is_blank_name(string: &[u16]) -> bool {
-    string.len() == 5 && string[0] == U16_SMALL_B && string[1] == U16_SMALL_L && string[2] == U16_SMALL_A && string[2] == U16_SMALL_N && string[2] == U16_SMALL_K
+    string.len() == 5 && string[0] == U16_SMALL_B && string[1] == U16_SMALL_L && string[2] == U16_SMALL_A && string[3] == U16_SMALL_N && string[4] == U16_SMALL_K
 }

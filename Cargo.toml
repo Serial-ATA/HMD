@@ -1,12 +1,11 @@
 [package]
 name = "hmd"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Baehyunsol <baehyunsol@naver.com>"]
 description = "Custom Markdown Engine for my personal blog."
 license = "MIT"
 keywords = ["markdown", "md", "web", "ssg"]
-categories = ["Template engine"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
