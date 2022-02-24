@@ -10,4 +10,5 @@ keywords = ["markdown", "md", "web", "ssg"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-syntect = "4.6.0"
+syntect = "4.6"
+lazy_static = "1.4"

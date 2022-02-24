@@ -8,6 +8,7 @@ mod paragraph;
 mod inline;
 mod escape;
 mod syntax_highlighter;
+mod icon;
 
 use escape::*;
 use inline::render_inlines;
